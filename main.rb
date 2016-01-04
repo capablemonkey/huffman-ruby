@@ -34,7 +34,6 @@ class BinaryTree
 
   def initialize(root_node)
     @root_node = root_node
-    @node_node = root_node
   end
 
   def traverse_preorder(proc, node=nil)
