@@ -36,19 +36,22 @@ class BinaryTree
     @root_node = root_node
   end
 
-  def traverse_preorder(proc, node=nil)
-    node = if node then node else @root_node end
+  def traverse_preorder(proc, current_node=nil, path=nil)
+    current_node = if current_node then current_node else @root_node end
 
-    if node.leaf? and node.byte
-      return proc.call(node)
+    # path is a sequence of left (0) and right (1) moves from the root node to arrive at the current node
+    path = if path then path else [] end
+
+    if current_node.leaf? and current_node.byte
+      return proc.call(current_node, path)
     end
 
-    if node.left_node
-      self.traverse_preorder(proc, node.left_node)
+    if current_node.left_node
+      self.traverse_preorder(proc, current_node.left_node, path + [0])
     end
 
-    if node.right_node
-      self.traverse_preorder(proc, node.right_node)
+    if current_node.right_node
+      self.traverse_preorder(proc, current_node.right_node, path + [1])
     end
   end
 end
@@ -61,7 +64,6 @@ def build_tree_from_frequencies(frequencies)
     priority_q.push BinaryTreeNode.new(byte, freq)
   end
 
-  # construct tree from bottom:
   while priority_q.size > 1
     first = priority_q.shift
     second = priority_q.shift
@@ -76,11 +78,16 @@ def build_tree_from_frequencies(frequencies)
   BinaryTree.new(root_node)
 end
 
-def build_byte_table(binary_tree)
-
+def build_byte_to_code_table(binary_tree)
+  byte_to_code = {}
+  binary_tree.traverse_preorder(lambda { |node, path| byte_to_code[node.byte] = path.join()} )
+  byte_to_code
 end
 
 frequencies = get_frequencies(input_file)
 binary_tree = build_tree_from_frequencies(frequencies)
 
-binary_tree.traverse_preorder(lambda { |node| puts node.freq.to_s << ':' << node.byte })
+# print frequency, character, and encoding:
+# binary_tree.traverse_preorder(lambda { |node, path| pp node.freq.to_s << ':'<< node.byte << " => " << path.join()} )
+
+pp build_byte_to_code_table(binary_tree)
