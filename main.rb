@@ -3,7 +3,7 @@ require 'pp'
 
 input_file = File.open('sample.txt', 'r')
 
-def getFrequencies(input_file)
+def get_frequencies(input_file)
   frequencies = {}
 
   # TODO: pre-populate frequencies with 0 to skip .nil? check.
@@ -53,7 +53,7 @@ class BinaryTree
   end
 end
 
-def buildTreeFromFrequencies(frequencies)
+def build_tree_from_frequencies(frequencies)
   # Turn each (byte, frequency) tuple into a Node and add to priority queue:
   priority_q = []
 
@@ -76,7 +76,11 @@ def buildTreeFromFrequencies(frequencies)
   BinaryTree.new(root_node)
 end
 
-frequencies = getFrequencies(input_file)
-binary_tree = buildTreeFromFrequencies(frequencies)
+def build_byte_table(binary_tree)
+
+end
+
+frequencies = get_frequencies(input_file)
+binary_tree = build_tree_from_frequencies(frequencies)
 
 binary_tree.traverse_preorder(lambda { |node| puts node.freq.to_s << ':' << node.byte })
