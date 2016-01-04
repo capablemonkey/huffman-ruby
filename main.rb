@@ -49,6 +49,7 @@ class HuffmanEncoder
     raise 'Missing input file' if input_file.nil?
 
     @input_file = input_file
+    @input_file.rewind
     frequencies = get_frequencies(input_file)
     binary_tree = build_tree_from_frequencies(frequencies)
     @encoding = build_byte_to_code_table(binary_tree)
@@ -59,13 +60,8 @@ class HuffmanEncoder
   end
 
   def output_as_string
-    output = ""
     @input_file.rewind
-    @input_file.each_byte do |k|
-      output += @encoding[k].to_s
-    end
-
-    output
+    @input_file.each_byte.map { |k| @encoding[k].to_s }.join
   end
 
   private
