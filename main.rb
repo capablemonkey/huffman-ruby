@@ -34,23 +34,22 @@ class BinaryTree
 
   def initialize(root_node)
     @root_node = root_node
-    @current_node = root_node
+    @node_node = root_node
   end
 
-  def traverse(proc, current=nil)
-    current = if current then current else @root_node end
+  def traverse_preorder(proc, node=nil)
+    node = if node then node else @root_node end
 
-    if current.leaf? and current.byte
-      #puts current.freq.to_s << ':' << current.byte
-      return proc.call(current)
+    if node.leaf? and node.byte
+      return proc.call(node)
     end
 
-    if current.left_node
-      self.traverse(proc, current.left_node)
+    if node.left_node
+      self.traverse_preorder(proc, node.left_node)
     end
 
-    if current.right_node
-      self.traverse(proc, current.right_node)
+    if node.right_node
+      self.traverse_preorder(proc, node.right_node)
     end
   end
 end
@@ -81,4 +80,4 @@ end
 frequencies = getFrequencies(input_file)
 binary_tree = buildTreeFromFrequencies(frequencies)
 
-binary_tree.traverse(lambda { |node| pp node.freq })
+binary_tree.traverse_preorder(lambda { |node| puts node.freq.to_s << ':' << node.byte })
