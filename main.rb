@@ -111,6 +111,10 @@ class HuffmanEncoder
   end
 end
 
+def file_length_bits(filename)
+  File.size('sample.txt') * 8
+end
+
 
 # testing things out:
 input_file = File.open(INPUT_FILE_NAME, 'r')
@@ -119,3 +123,10 @@ encoder = HuffmanEncoder.new(input_file)
 compressed = encoder.output_as_string
 
 puts compressed
+output_size_bits = compressed.length
+input_size_bits = File.size(INPUT_FILE_NAME) * 8
+delta_bits = input_size_bits - output_size_bits
+puts "Original file size: %i bits" % input_size_bits
+puts "Encoded file size: %i bits" % output_size_bits
+puts "Saved space: %i bits" % delta_bits
+puts "Space savings: %.2f%" % ((1 - output_size_bits * 1.0 / input_size_bits) * 100)
