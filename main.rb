@@ -1,5 +1,7 @@
 require 'pp'
-# require 'profile'
+# require 'profile' # to determine performance bottlenecks
+
+INPUT_FILE_NAME = 'sample.txt'
 
 class BinaryTreeNode
   attr_accessor :byte, :freq, :parent_node, :left_node, :right_node
@@ -53,8 +55,17 @@ class HuffmanEncoder
 
     # print frequency, character, and encoding:
     # binary_tree.traverse_preorder(lambda { |node, path| pp node.freq.to_s << ':'<< node.byte << " => " << path.join()} )
-
     # pp @encoding
+  end
+
+  def output_as_string
+    output = ""
+    @input_file.rewind
+    @input_file.each_byte do |k|
+      output += @encoding[k].to_s
+    end
+
+    output
   end
 
   private
@@ -102,7 +113,9 @@ end
 
 
 # testing things out:
-input_file = File.open('sample.txt', 'r')
+input_file = File.open(INPUT_FILE_NAME, 'r')
 encoder = HuffmanEncoder.new(input_file)
 
-pp encoder
+compressed = encoder.output_as_string
+
+puts compressed
