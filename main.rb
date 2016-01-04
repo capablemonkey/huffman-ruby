@@ -1,20 +1,6 @@
 require 'pp'
 # require 'profile'
 
-input_file = File.open('sample.txt', 'r')
-
-def get_frequencies(input_file)
-  frequencies = {}
-
-  # TODO: pre-populate frequencies with 0 to skip .nil? check.
-
-  input_file.each_byte do |k|
-    frequencies[k] = if frequencies[k].nil? then 1 else (frequencies[k] + 1) end
-  end
-
-  frequencies.to_a.sort_by! { |k, v| v }
-end
-
 class BinaryTreeNode
   attr_accessor :byte, :freq, :parent_node, :left_node, :right_node
   def initialize(byte=nil, freq=nil, parent_node=nil, left_node=nil, right_node=nil)
@@ -56,38 +42,67 @@ class BinaryTree
   end
 end
 
-def build_tree_from_frequencies(frequencies)
-  # Turn each (byte, frequency) tuple into a Node and add to priority queue:
-  priority_q = []
+class HuffmanEncoder
+  def initialize(input_file)
+    raise 'Missing input file' if input_file.nil?
 
-  frequencies.each do | byte, freq |
-    priority_q.push BinaryTreeNode.new(byte, freq)
+    @input_file = input_file
+    frequencies = get_frequencies(input_file)
+    binary_tree = build_tree_from_frequencies(frequencies)
+    @encoding = build_byte_to_code_table(binary_tree)
+
+    # print frequency, character, and encoding:
+    # binary_tree.traverse_preorder(lambda { |node, path| pp node.freq.to_s << ':'<< node.byte << " => " << path.join()} )
+
+    # pp @encoding
   end
 
-  while priority_q.size > 1
-    first = priority_q.shift
-    second = priority_q.shift
-    combined_frequency = first.freq + second.freq
-    internal_node = BinaryTreeNode.new(nil, combined_frequency, nil, first, second)
-    priority_q.push(internal_node)
-    priority_q.sort_by! { |node| node.freq }
+  private
+
+  def build_tree_from_frequencies(frequencies)
+    # Turn each (byte, frequency) tuple into a Node and add to priority queue:
+    priority_q = []
+
+    frequencies.each do | byte, freq |
+      priority_q.push BinaryTreeNode.new(byte, freq)
+    end
+
+    while priority_q.size > 1
+      first = priority_q.shift
+      second = priority_q.shift
+      combined_frequency = first.freq + second.freq
+      internal_node = BinaryTreeNode.new(nil, combined_frequency, nil, first, second)
+      priority_q.push(internal_node)
+      priority_q.sort_by! { |node| node.freq }
+    end
+
+    # when there's only one node left, that's the root node:
+    root_node = priority_q.shift
+    BinaryTree.new(root_node)
   end
 
-  # when there's only one node left, that's the root node:
-  root_node = priority_q.shift
-  BinaryTree.new(root_node)
+  def build_byte_to_code_table(binary_tree)
+    byte_to_code = {}
+    binary_tree.traverse_preorder(lambda { |node, path| byte_to_code[node.byte] = path.join()} )
+    byte_to_code
+  end
+
+  def get_frequencies(input_file)
+    frequencies = {}
+
+    # TODO: pre-populate frequencies with 0 to skip .nil? check.
+
+    input_file.each_byte do |k|
+      frequencies[k] = if frequencies[k].nil? then 1 else (frequencies[k] + 1) end
+    end
+
+    frequencies.to_a.sort_by! { |k, v| v }
+  end
 end
 
-def build_byte_to_code_table(binary_tree)
-  byte_to_code = {}
-  binary_tree.traverse_preorder(lambda { |node, path| byte_to_code[node.byte] = path.join()} )
-  byte_to_code
-end
 
-frequencies = get_frequencies(input_file)
-binary_tree = build_tree_from_frequencies(frequencies)
+# testing things out:
+input_file = File.open('sample.txt', 'r')
+encoder = HuffmanEncoder.new(input_file)
 
-# print frequency, character, and encoding:
-# binary_tree.traverse_preorder(lambda { |node, path| pp node.freq.to_s << ':'<< node.byte << " => " << path.join()} )
-
-pp build_byte_to_code_table(binary_tree)
+pp encoder
