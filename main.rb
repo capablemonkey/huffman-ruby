@@ -2,6 +2,7 @@ require 'pp'
 # require 'profile' # to determine performance bottlenecks
 
 INPUT_FILE_NAME = 'sample.txt'
+OUTPUT_FILE_NAME = 'output.txt'
 
 class BinaryTreeNode
   attr_accessor :byte, :freq, :parent_node, :left_node, :right_node
@@ -64,6 +65,14 @@ class HuffmanEncoder
     @input_file.each_byte.map { |k| @encoding[k].to_s }.join
   end
 
+  def output_to_file(output_file)
+    output_file.rewind
+    bit_string = output_as_string
+
+    output_file.binmode
+    output_file.write [bit_string].pack('B*')
+  end
+
   private
 
   def build_tree_from_frequencies(frequencies)
@@ -114,9 +123,14 @@ end
 
 # testing things out:
 input_file = File.open(INPUT_FILE_NAME, 'r')
+output_file = File.open(OUTPUT_FILE_NAME, 'wb')
 encoder = HuffmanEncoder.new(input_file)
 
+encoder.output_to_file(output_file)
 compressed = encoder.output_as_string
+
+input_file.close
+output_file.close
 
 puts compressed
 output_size_bits = compressed.length
