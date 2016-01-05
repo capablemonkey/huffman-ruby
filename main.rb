@@ -5,8 +5,8 @@ INPUT_FILE_NAME = 'sample.txt'
 OUTPUT_FILE_NAME = 'output.txt'
 
 class BinaryTreeNode
-  attr_accessor :byte, :freq, :parent_node, :left_node, :right_node
-  def initialize(byte=nil, freq=nil, parent_node=nil, left_node=nil, right_node=nil)
+  attr_accessor :byte, :freq, :left_node, :right_node
+  def initialize(byte=nil, freq=nil, left_node=nil, right_node=nil)
     @byte = byte
     @freq = freq
     @left_node = left_node
@@ -74,8 +74,10 @@ class HuffmanEncoder
   end
 
   def decode(bit_string)
+    # determine inverse of the huffman table (code -> byte)
     @decoding = @encoding.invert
 
+    # iterate through bits and replace match sequences of bits with their huffman encoding.
     buffer = ''
     output = ''
     bit_string.each_char do |bit|
@@ -104,7 +106,7 @@ class HuffmanEncoder
       first = priority_q.shift
       second = priority_q.shift
       combined_frequency = first.freq + second.freq
-      internal_node = BinaryTreeNode.new(nil, combined_frequency, nil, first, second)
+      internal_node = BinaryTreeNode.new(nil, combined_frequency, first, second)
       priority_q.push(internal_node)
       priority_q.sort_by! { |node| node.freq }
     end
@@ -149,7 +151,7 @@ compressed = encoder.output_as_string
 input_file.close
 output_file.close
 
-puts compressed
+# puts compressed
 output_size_bits = compressed.length
 input_size_bits = File.size(INPUT_FILE_NAME) * 8
 delta_bits = input_size_bits - output_size_bits
