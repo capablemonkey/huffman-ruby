@@ -73,6 +73,23 @@ class HuffmanEncoder
     output_file.write [bit_string].pack('B*')
   end
 
+  def decode(bit_string)
+    @decoding = @encoding.invert
+
+    buffer = ''
+    output = ''
+    bit_string.each_char do |bit|
+      buffer << bit.to_s
+
+      if @decoding.include?(buffer)
+        output << @decoding[buffer]
+        buffer = ''
+      end
+    end
+
+    output
+  end
+
   private
 
   def build_tree_from_frequencies(frequencies)
@@ -140,3 +157,5 @@ puts "Original file size: %i bits" % input_size_bits
 puts "Encoded file size: %i bits" % output_size_bits
 puts "Saved space: %i bits" % delta_bits
 puts "Space savings: %.2f%" % ((1 - output_size_bits * 1.0 / input_size_bits) * 100)
+
+# puts encoder.decode(compressed)
