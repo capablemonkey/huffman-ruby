@@ -1,6 +1,5 @@
 require 'pp'
 # require 'profile' # to determine performance bottlenecks
-require_relative 'binary_tree.rb'
 require_relative 'huffman.rb'
 
 INPUT_FILE_NAME = 'sample.txt'

@@ -1,3 +1,5 @@
+require_relative 'binary_tree'
+
 module Huffman
   class Encoder
     def initialize(input_file)
