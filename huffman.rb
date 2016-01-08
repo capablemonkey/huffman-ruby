@@ -87,7 +87,7 @@ module Huffman
         frequencies[k] = if frequencies[k].nil? then 1 else (frequencies[k] + 1) end
       end
 
-      frequencies.to_a.sort_by! { |k, v| v }
+      frequencies.to_a.sort_by! { |_, v| v }
     end
   end
 end
